@@ -30,4 +30,22 @@ class RequestFingerprintTest {
     void fingerprintIs64HexCharacters() {
         assertThat(RequestFingerprint.of(TransactionType.DEPOSIT, walletId, BigDecimal.TEN)).matches("[0-9a-f]{64}");
     }
+
+        @Test
+    void transferFingerprintDependsOnBothWalletsAndTheAmount() {
+        UUID other = UUID.randomUUID();
+        String base = RequestFingerprint.of(TransactionType.TRANSFER, walletId, other, new BigDecimal("100"));
+
+        assertThat(RequestFingerprint.of(TransactionType.TRANSFER, walletId, UUID.randomUUID(), new BigDecimal("100"))).isNotEqualTo(base);
+        assertThat(RequestFingerprint.of(TransactionType.TRANSFER, other, walletId, new BigDecimal("100"))).isNotEqualTo(base);
+        assertThat(RequestFingerprint.of(TransactionType.TRANSFER, walletId, other, new BigDecimal("101"))).isNotEqualTo(base);
+    }
+
+    @Test
+    void transferFingerprintIgnoresTrailingZeros() {
+        UUID other = UUID.randomUUID();
+
+        assertThat(RequestFingerprint.of(TransactionType.TRANSFER, walletId, other, new BigDecimal("100")))
+                .isEqualTo(RequestFingerprint.of(TransactionType.TRANSFER, walletId, other, new BigDecimal("100.00")));
+    }
 }

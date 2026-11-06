@@ -2,7 +2,6 @@ package com.ledgercore.transaction;
 
 import com.ledgercore.common.IdempotencyConflictException;
 import com.ledgercore.common.InvalidAmountException;
-import com.ledgercore.common.InvalidIdempotencyKeyException;
 import com.ledgercore.common.ResourceNotFoundException;
 import com.ledgercore.transaction.dto.TransactionResponse;
 import com.ledgercore.wallet.Wallet;
@@ -16,15 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.regex.Pattern;
+
 
 @Service
 public class TransactionService {
 
     private static final Logger log = LoggerFactory.getLogger(TransactionService.class);
-
-    /** 1 to 100 visible ASCII characters, no spaces. */
-    private static final Pattern IDEMPOTENCY_KEY = Pattern.compile("[\\x21-\\x7E]{1,100}");
 
     private final WalletRepository walletRepository;
     private final WalletTransactionRepository transactionRepository;
@@ -50,9 +46,8 @@ public class TransactionService {
 
     private TransactionResponse execute(TransactionType type, UUID userId, UUID walletId,
                                         BigDecimal amount, String idempotencyKey) {
-        if (idempotencyKey == null || !IDEMPOTENCY_KEY.matcher(idempotencyKey).matches()) {
-            throw new InvalidIdempotencyKeyException();
-        }
+            IdempotencyKeys.requireValid(idempotencyKey);
+        
         if (amount == null) {
             throw new InvalidAmountException("Amount is required.");
         }
