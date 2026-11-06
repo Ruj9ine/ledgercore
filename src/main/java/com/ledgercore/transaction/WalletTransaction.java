@@ -91,6 +91,13 @@ public class WalletTransaction {
                 currency, amount, idempotencyKey, requestHash);
     }
 
+    public static WalletTransaction transfer(UUID userId, UUID sourceWalletId, UUID destinationWalletId,
+                                             SupportedCurrency currency, BigDecimal amount,
+                                             String idempotencyKey, String requestHash) {
+        return new WalletTransaction(userId, sourceWalletId, destinationWalletId, TransactionType.TRANSFER,
+                currency, amount, idempotencyKey, requestHash);
+    }
+
     @PrePersist
     void onCreate() {
         this.createdAt = Instant.now();
