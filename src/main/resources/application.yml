@@ -27,3 +27,9 @@ management:
   endpoint:
     health:
       show-details: never
+
+
+ledgercore:
+  jwt:
+    secret: ${JWT_SECRET}            # required, at least 32 characters; never commit a real value
+    expiration-minutes: ${JWT_EXPIRATION_MINUTES:60}

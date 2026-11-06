@@ -1,7 +1,9 @@
 package com.ledgercore;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
+@ConfigurationPropertiesScan
 class LedgerCoreApplicationTests extends AbstractIntegrationTest {
 
     @Test

@@ -4,7 +4,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
-@SpringBootTest
+@SpringBootTest(properties = "ledgercore.jwt.secret=integration-test-secret-integration-test-secret")
+
 @AutoConfigureMockMvc
 @Import(TestcontainersConfig.class)
 public abstract class AbstractIntegrationTest {
