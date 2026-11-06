@@ -54,6 +54,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return problem(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage());
     }
 
+        @ExceptionHandler(InsufficientFundsException.class)
+    public ProblemDetail handleInsufficientFunds(InsufficientFundsException ex) {
+        return problem(HttpStatus.UNPROCESSABLE_ENTITY, "Insufficient Funds", ex.getMessage());
+    }
+
+    @ExceptionHandler(WalletFrozenException.class)
+    public ProblemDetail handleWalletFrozen(WalletFrozenException ex) {
+        return problem(HttpStatus.CONFLICT, "Wallet Frozen", ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidAmountException.class)
+    public ProblemDetail handleInvalidAmount(InvalidAmountException ex) {
+        return problem(HttpStatus.BAD_REQUEST, "Invalid Amount", ex.getMessage());
+    }
+
     /** Covers bad credentials and disabled accounts with one message, so callers cannot probe which accounts exist. */
     @ExceptionHandler(AuthenticationException.class)
     public ProblemDetail handleAuthentication(AuthenticationException ex) {

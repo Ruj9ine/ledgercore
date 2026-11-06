@@ -16,9 +16,15 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
+import com.ledgercore.common.InsufficientFundsException;
+import com.ledgercore.common.InvalidAmountException;
+import com.ledgercore.common.WalletFrozenException;
+
 @Entity
 @Table(name = "wallets")
 public class Wallet {
+
+    public static final BigDecimal MAX_TRANSACTION_AMOUNT = new BigDecimal("1000000000");
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -66,6 +72,42 @@ public class Wallet {
     @PreUpdate
     void onUpdate() {
         this.updatedAt = Instant.now();
+    }
+
+        public void credit(BigDecimal amount) {
+        validateForMovement(amount);
+        this.balance = this.balance.add(amount);
+    }
+
+    public void debit(BigDecimal amount) {
+        validateForMovement(amount);
+        if (balance.compareTo(amount) < 0) {
+            throw new InsufficientFundsException();
+        }
+        this.balance = this.balance.subtract(amount);
+    }
+
+    public void freeze() {
+        this.status = WalletStatus.FROZEN;
+    }
+
+    public void activate() {
+        this.status = WalletStatus.ACTIVE;
+    }
+
+    private void validateForMovement(BigDecimal amount) {
+        if (status != WalletStatus.ACTIVE) {
+            throw new WalletFrozenException();
+        }
+        if (amount == null || amount.signum() <= 0) {
+            throw new InvalidAmountException("Amount must be greater than zero.");
+        }
+        if (!currency.acceptsScaleOf(amount)) {
+            throw new InvalidAmountException("Amount has too many decimal places for " + currency + ".");
+        }
+        if (amount.compareTo(MAX_TRANSACTION_AMOUNT) > 0) {
+            throw new InvalidAmountException("Amount exceeds the maximum of " + MAX_TRANSACTION_AMOUNT.toPlainString() + ".");
+        }
     }
 
     public UUID getId() { return id; }
