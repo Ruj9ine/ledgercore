@@ -69,6 +69,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return problem(HttpStatus.BAD_REQUEST, "Invalid Amount", ex.getMessage());
     }
 
+        @ExceptionHandler(IdempotencyConflictException.class)
+    public ProblemDetail handleIdempotencyConflict(IdempotencyConflictException ex) {
+        return problem(HttpStatus.CONFLICT, "Idempotency Conflict", ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidIdempotencyKeyException.class)
+    public ProblemDetail handleInvalidIdempotencyKey(InvalidIdempotencyKeyException ex) {
+        return problem(HttpStatus.BAD_REQUEST, "Invalid Idempotency Key", ex.getMessage());
+    }
+
     /** Covers bad credentials and disabled accounts with one message, so callers cannot probe which accounts exist. */
     @ExceptionHandler(AuthenticationException.class)
     public ProblemDetail handleAuthentication(AuthenticationException ex) {
