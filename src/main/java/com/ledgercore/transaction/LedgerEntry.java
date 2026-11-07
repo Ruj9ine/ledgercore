@@ -9,6 +9,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import org.hibernate.annotations.Immutable;
 
 import java.math.BigDecimal;
@@ -27,6 +30,12 @@ public class LedgerEntry {
 
     @Column(name = "transaction_id", nullable = false)
     private UUID transactionId;
+
+        // A read-only link to the owning transaction, so statements can filter on and show its type and reference.
+    // It maps the same column as transactionId, so it must never be written through.
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "transaction_id", insertable = false, updatable = false)
+    private WalletTransaction transaction;
 
     @Column(name = "wallet_id", nullable = false)
     private UUID walletId;
@@ -63,6 +72,10 @@ public class LedgerEntry {
 
     public static LedgerEntry debit(UUID transactionId, UUID walletId, BigDecimal amount, BigDecimal balanceAfter) {
         return new LedgerEntry(transactionId, walletId, LedgerDirection.DEBIT, amount, balanceAfter);
+    }
+
+    public WalletTransaction getTransaction() {
+         return transaction; 
     }
 
     @PrePersist
