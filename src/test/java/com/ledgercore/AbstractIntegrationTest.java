@@ -18,6 +18,6 @@ public abstract class AbstractIntegrationTest {
     /** Every integration test starts from empty tables. CASCADE also clears tables added by later milestones. */
     @BeforeEach
     void resetDatabase() {
-        jdbcTemplate.execute("TRUNCATE TABLE users CASCADE");
+        jdbcTemplate.execute("TRUNCATE TABLE users, audit_log CASCADE");
     }
 }
