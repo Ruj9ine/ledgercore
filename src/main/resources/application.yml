@@ -33,3 +33,6 @@ ledgercore:
   jwt:
     secret: ${JWT_SECRET}            # required, at least 32 characters; never commit a real value
     expiration-minutes: ${JWT_EXPIRATION_MINUTES:60}
+  admin:
+    email: ${ADMIN_EMAIL:}
+    password: ${ADMIN_PASSWORD:}
