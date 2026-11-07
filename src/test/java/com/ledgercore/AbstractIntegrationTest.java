@@ -20,4 +20,9 @@ public abstract class AbstractIntegrationTest {
     void resetDatabase() {
         jdbcTemplate.execute("TRUNCATE TABLE users, audit_log CASCADE");
     }
+
+    /** Makes an existing user an admin directly in the database, which is how admins are created outside the bootstrap. */
+    protected void promoteToAdmin(String email) {
+        jdbcTemplate.update("update users set role = 'ADMIN' where email = ?", email);
+    }
 }
