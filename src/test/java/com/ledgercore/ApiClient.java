@@ -75,6 +75,21 @@ public class ApiClient {
         return objectMapper.readTree(body).get("balance").asText();
     }
 
+        /** Query parameters are passed as name, value, name, value, ... so tests read like the URL they build. */
+    public ResultActions statement(String token, UUID walletId, String... queryPairs) throws Exception {
+        MockHttpServletRequestBuilder request = get("/api/v1/wallets/" + walletId + "/transactions")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token);
+        for (int i = 0; i < queryPairs.length; i += 2) {
+            request.param(queryPairs[i], queryPairs[i + 1]);
+        }
+        return mvc.perform(request);
+    }
+
+    public ResultActions transactionByReference(String token, String reference) throws Exception {
+        return mvc.perform(get("/api/v1/transactions/" + reference)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token));
+    }
+
     private ResultActions movement(String token, UUID walletId, String path, String key, String body) throws Exception {
         MockHttpServletRequestBuilder request = post("/api/v1/wallets/" + walletId + "/" + path)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
