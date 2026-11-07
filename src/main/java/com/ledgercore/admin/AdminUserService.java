@@ -56,6 +56,7 @@ public class AdminUserService {
             throw new StateConflictException("This user is already disabled.");
         }
         user.setEnabled(false);
+        userRepository.saveAndFlush(user);
         // Same database transaction as the change above: either both are saved, or neither is.
         auditService.record(actorId, AuditAction.USER_DISABLED, AuditTargetType.USER, userId, reason.trim(), "was enabled");
         return AdminUserResponse.from(user);
@@ -68,6 +69,7 @@ public class AdminUserService {
             throw new StateConflictException("This user is already enabled.");
         }
         user.setEnabled(true);
+        userRepository.saveAndFlush(user);
         auditService.record(actorId, AuditAction.USER_ENABLED, AuditTargetType.USER, userId, reason.trim(), "was disabled");
         return AdminUserResponse.from(user);
     }
