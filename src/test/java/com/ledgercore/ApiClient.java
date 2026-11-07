@@ -90,6 +90,21 @@ public class ApiClient {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token));
     }
 
+    public ResultActions getAs(String token, String path, String... queryPairs) throws Exception {
+        MockHttpServletRequestBuilder request = get(path).header(HttpHeaders.AUTHORIZATION, "Bearer " + token);
+        for (int i = 0; i < queryPairs.length; i += 2) {
+            request.param(queryPairs[i], queryPairs[i + 1]);
+        }
+        return mvc.perform(request);
+    }
+
+    public ResultActions postAs(String token, String path, String jsonBody) throws Exception {
+        return mvc.perform(post(path)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonBody));
+    }
+
     private ResultActions movement(String token, UUID walletId, String path, String key, String body) throws Exception {
         MockHttpServletRequestBuilder request = post("/api/v1/wallets/" + walletId + "/" + path)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
