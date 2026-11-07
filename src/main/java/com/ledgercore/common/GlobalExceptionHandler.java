@@ -106,6 +106,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return problem(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", "An unexpected error occurred.");
     }
 
+    @ExceptionHandler(InvalidQueryException.class)
+    public ProblemDetail handleInvalidQuery(InvalidQueryException ex) {
+        return problem(HttpStatus.BAD_REQUEST, "Invalid Query", ex.getMessage());
+    }
+
     private static ProblemDetail problem(HttpStatus status, String title, String detail) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(status, detail);
         problem.setTitle(title);
